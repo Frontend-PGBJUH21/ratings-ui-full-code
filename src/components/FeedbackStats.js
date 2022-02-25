@@ -1,11 +1,16 @@
-const FeedbackStats = ({ feedback }) => {
+import { useContext } from "react";
+import FeedbackContext from "../context/FeedbackContext";
+
+const FeedbackStats = () => {
+  const { feedback } = useContext(FeedbackContext);
+
   // calculate average ratings
   let average = Math.round(
     feedback.reduce((acc, { rating }) => acc + rating, 0) / feedback.length
   );
 
   //console.log(average);
-  average = average.toFixed(1).replace(/[.,]0$/, "");
+  //average = average.toFixed(1).replace(/[.,]0$/, "");
 
   return (
     <div className="feedback-stats">

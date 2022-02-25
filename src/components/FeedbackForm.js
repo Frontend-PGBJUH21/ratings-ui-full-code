@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
+import FeedbackContext from "../context/FeedbackContext";
 import Card from "./Card";
 import Button from "./Button";
 import RatingSelect from "./RatingSelect";
 
-const FeedbackForm = ({ handleAdd }) => {
+const FeedbackForm = () => {
   const [text, setText] = useState("");
   const [rating, setRating] = useState(10);
   const [btnDisable, setBtnDisable] = useState(true);
   const [message, setMessage] = useState("");
+
+  const { addFeedback, feedbackEdit, updateFeedback } =
+    useContext(FeedbackContext);
+
+  // TODO add useEffect for edit and update
+  useEffect(() => {
+    if (feedbackEdit.edit === true) {
+      setBtnDisable(false);
+      setText(feedbackEdit.item.text);
+      setRating(feedbackEdit.item.rating);
+    }
+  }, [feedbackEdit]);
 
   const handleTextChange = (e) => {
     if (text === "") {
@@ -31,7 +44,13 @@ const FeedbackForm = ({ handleAdd }) => {
         rating,
       };
 
-      handleAdd(newFeedback);
+      //handleAdd(newFeedback);
+      if (feedbackEdit.edit === true) {
+        updateFeedback(feedbackEdit.item.id, newFeedback);
+      } else {
+        addFeedback(newFeedback);
+      }
+
       setText("");
     }
   };
@@ -41,16 +60,18 @@ const FeedbackForm = ({ handleAdd }) => {
       <form onSubmit={handleSubmit}>
         <h2>How would you like to rate your service with us?</h2>
         <RatingSelect select={(rating) => setRating(rating)} />
-        <input
-          className="input-group"
-          type="text"
-          placeholder="Write a review"
-          onChange={handleTextChange}
-          value={text}
-        />
-        <Button type="submit" isDisabled={btnDisable}>
-          Send
-        </Button>
+        <div className="input-group">
+          <input
+            type="text"
+            placeholder="Write a review"
+            onChange={handleTextChange}
+            value={text}
+          />
+          <Button type="submit" isDisabled={btnDisable}>
+            Send
+          </Button>
+        </div>
+        {message && <div className="message">{message}</div>}
       </form>
     </Card>
   );
